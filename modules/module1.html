@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1 : Mots de passe | CyberShield</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Quelques petits ajouts CSS spécifiques pour ce module (peuvent être mis dans style.css plus tard) */
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box; /* Pour que le padding ne dépasse pas la largeur */
+            font-size: 1rem;
+        }
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CyberShield</h1>
+        <p>Propulsé par SecureNova</p>
+        
+        <nav class="top-nav">
+            <div class="dropdown">
+                <button class="dropbtn">Sélectionner un module ▼</button>
+                <div class="dropdown-content">
+                    <a href="index.html">Accueil</a>
+                    <a href="module1.html">Module 1 — Robustesse de mot de passe</a>
+                    <a href="module2.html">Module 2 — Chiffrement de messages</a>
+                    <a href="#">Module 3 — Détecteur de phishing</a>
+                    <a href="#">Module 4 — Dashboard de veille</a>
+                    <a href="#">Module 5 — Quiz interactif</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Module 1 : Analyseur de robustesse de mot de passe</h2>
+        <p>Un mot de passe fort est la première ligne de défense de votre entreprise. Testez la solidité de vos mots de passe habituels. <em>(Note : aucun mot de passe n'est sauvegardé, tout reste sur votre ordinateur).</em></p>
+
+        <div class="module-test">
+            <h3>Testez votre mot de passe</h3>
+            
+            <label for="password-input">Saisissez un mot de passe :</label>
+            <input type="password" id="password-input" placeholder="Tapez votre mot de passe ici...">
+            
+            <button class="btn" id="analyze-btn">Analyser la robustesse</button>
+
+            <div class="feedback-box" id="password-feedback">
+                En attente d'analyse...
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SecureNova. Sensibilisation à la cybersécurité pour les PME.</p>
+    </footer>
+
+</body>
+</html>
