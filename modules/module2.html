@@ -8,7 +8,6 @@
 
 </head>
 <body>
-
     <header>
         <h1>CyberShield</h1>
         <p>Propulsé par SecureNova</p>
@@ -31,20 +30,27 @@
     <main>
         <h2>Module 2 : Chiffrement & déchiffrement de messages</h2>
         <p>Comprendre comment masquer les informations sensibles est vital. Utilisez cet outil pour chiffrer (cacher) et déchiffrer (révéler) des messages en utilisant un algorithme basique.</p>
-
-        <div class="module-test">
+        
+    <div class="module-test">
             <h3>Laboratoire de cryptographie</h3>
             
-            <label for="message-input">Message original :</label>
-            <textarea id="message-input" placeholder="Saisissez le message secret ici..."></textarea>
+            <label for="shift-input"><strong>Clé (décalage de 1 à 25) :</strong></label><br>
+            <input type="number" id="shift-input" value="3" min="1" max="25">
+            <br>
+            
+            <label for="message-input">Message original ou chiffré :</label>
+            <textarea id="message-input" placeholder="Saisissez le message ici..."></textarea>
             
             <div class="action-buttons">
-                <button class="btn" id="encrypt-btn">Chiffrer le message</button>
-                <button class="btn" id="decrypt-btn" style="background-color: #e74c3c;">Déchiffrer le message</button>
+                <button class="btn" id="encrypt-btn">Chiffrer</button>
+                <button class="btn" id="decrypt-btn">Déchiffrer</button>
+                <button class="btn" id="bruteforce-btn">Force Brute</button>
             </div>
 
-            <label for="result-output">Résultat :</label>
+            <label for="result-output">Résultat simple :</label>
             <textarea id="result-output" placeholder="Le résultat apparaîtra ici..." readonly></textarea>
+
+            <div id="bruteforce-results"></div>
         </div>
     </main>
 
@@ -52,6 +58,6 @@
         <p>&copy; 2026 SecureNova. Sensibilisation à la cybersécurité pour les PME.</p>
     </footer>
 
-    <script src="cipher.js"></script>
+    <script src="../js/cipher.js"></script>
 </body>
 </html>
