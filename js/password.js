@@ -1,21 +1,42 @@
-// Récupération des éléments HTML (adapte les ID si besoin)
-const passwordInput = document.getElementById("password");
+// 1. Récupération des éléments HTML 
+const passwordInput = document.getElementById("password-input");
 const strengthBar = document.getElementById("strength-bar");
-const feedback = document.getElementById("feedback");
+const feedback = document.getElementById("password-feedback");
 const scoreText = document.getElementById("score");
 
-// Liste simple de mots de passe faibles
-const commonPasswords = [
-  "123456", "password", "123456789", "qwerty", "abc123",
-  "111111", "123123", "admin", "welcome"
-];
+// 2. NOUVEAU : On prépare une liste vide
+let commonPasswords = [];
 
+// 3. NOUVEAU : On va chercher le fichier texte externe
+fetch('../passwords.txt')
+  .then(response => response.text()) // On lit le contenu comme du texte
+  .then(texteBrut => {
+      // On découpe le texte à chaque retour à la ligne (\n)
+      // .trim() nettoie les espaces cachés, .toLowerCase() met tout en minuscules
+      commonPasswords = texteBrut.split('\n').map(mot => mot.trim().toLowerCase());
+      console.log(`Succès ! ${commonPasswords.length} mots de passe chargés depuis le fichier.`);
+  })
+  .catch(erreur => {
+      console.error("Erreur de chargement. Utilisez-vous bien un serveur local ?", erreur);
+  });
+
+// 4. Écouteur d'événement : se déclenche à chaque touche pressée
 passwordInput.addEventListener("input", () => {
   const password = passwordInput.value;
+  
+  // Si le champ est vide, on remet tout à zéro
+  if (password === "") {
+      strengthBar.style.width = "0%";
+      scoreText.textContent = "Sécurité : 0/100";
+      feedback.innerHTML = "En attente d'analyse... Commencez à taper.";
+      return; 
+  }
+
   const result = analyzePassword(password);
   updateUI(result);
 });
 
+// 3. Fonction d'analyse (Le cerveau)
 function analyzePassword(password) {
   let score = 0;
   let feedbackList = [];
@@ -71,11 +92,12 @@ function analyzePassword(password) {
   score = Math.max(0, Math.min(score, 100));
 
   return {
-    score,
+    score, // Raccourci JS pour score: score
     feedback: feedbackList
   };
 }
 
+// 4. Fonction d'affichage (Mise à jour de l'interface)
 function updateUI(result) {
   const { score, feedback: feedbackList } = result;
 
@@ -84,20 +106,21 @@ function updateUI(result) {
 
   // Couleur selon score
   if (score < 40) {
-    strengthBar.style.backgroundColor = "red";
+    strengthBar.style.backgroundColor = "#e74c3c"; // Rouge CyberShield
   } else if (score < 70) {
-    strengthBar.style.backgroundColor = "orange";
+    strengthBar.style.backgroundColor = "#f39c12"; // Orange CyberShield
   } else {
-    strengthBar.style.backgroundColor = "green";
+    strengthBar.style.backgroundColor = "#2ecc71"; // Vert
   }
 
   // Texte score
   scoreText.textContent = `Sécurité : ${score}/100`;
 
-  // Feedback
+  // Feedback (Liste des conseils)
   if (feedbackList.length === 0) {
-    feedback.innerHTML = "Mot de passe fort ✅";
+    feedback.innerHTML = "<span style='color: #2ecc71;'>Mot de passe fort ✅</span>";
   } else {
+    // Transforme le tableau de textes en véritables balises <li> HTML
     feedback.innerHTML = feedbackList.map(f => `<li>${f}</li>`).join("");
   }
 }
