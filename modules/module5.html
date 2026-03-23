@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Cybersécurité</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <div id="accueil">
+    <h1>Quiz Cybersécurité</h1>
+    <p>10 questions. 15 secondes par question.</p>
+    <button onclick="demarrerQuiz()">Démarrer</button>
+    <button onclick="afficherModeChoix()">Mode Duel</button>
+  </div>
+
+  <div id="modeChoix" style="display:none">
+    <h2>Mode Duel</h2>
+    <input type="text" id="nomJ1" placeholder="Nom Joueur 1" />
+    <input type="text" id="nomJ2" placeholder="Nom Joueur 2" />
+    <button onclick="demarrerDuel()">Lancer</button>
+    <button onclick="retourAccueil()">Retour</button>
+  </div>
+
+  <div id="quiz" style="display:none">
+    <div id="infos">
+      <span id="numero">Question 1/10</span>
+      <span id="categorie"></span>
+      <span id="difficulte"></span>
+      <span id="score">Score : 0</span>
+      <span id="streak"></span>
+    </div>
+    <div id="joueurActuel" style="display:none"></div>
+    <div id="timer">15s</div>
+    <div id="question"></div>
+    <div id="reponses"></div>
+    <div id="feedback"></div>
+  </div>
+
+  <div id="resultats" style="display:none">
+    <h2>Résultats</h2>
+    <p id="scoreFinal"></p>
+    <p id="messageResultat"></p>
+    <h3>Top 5</h3>
+    <ol id="top5"></ol>
+    <button onclick="demarrerQuiz()">Rejouer</button>
+    <button onclick="retourAccueil()">Accueil</button>
+  </div>
+
+  <div id="resultatsDuel" style="display:none">
+    <h2>Podium</h2>
+    <div id="podium"></div>
+    <button onclick="retourAccueil()">Accueil</button>
+  </div>
+
+  <script src="../js/quiz.js"></script>
+</body>
+</html>
