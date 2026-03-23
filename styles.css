@@ -52,6 +52,7 @@ h2 {
 
 .btn {
     display: inline-block;
+    border: none;
     background-color: #3498db;
     color: white;
     padding: 12px 24px;
@@ -75,6 +76,7 @@ h2 {
     font-weight: bold;
     margin-top: 1rem;
     transition: background-color 0.3s ease;
+    border: none;
 }
 
 footer {
