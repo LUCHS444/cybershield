@@ -1,58 +1,214 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz Cybersécurité</title>
-  <link rel="stylesheet" href="../styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5 : Quiz interactif | CyberShield</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .quiz-btn {
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 6px 6px 6px 0;
+            transition: background 0.2s;
+        }
+        .quiz-btn:hover { background: #1558b0; }
+        .quiz-btn.secondaire { background: #555; }
+        .quiz-btn.secondaire:hover { background: #333; }
+
+        #timer-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background: #1a73e8;
+            border-radius: 5px;
+            transition: width 1s linear, background 0.5s;
+        }
+        #timer-texte {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        #question-texte {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 16px 0 12px;
+            line-height: 1.4;
+        }
+
+        .reponse-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 11px 14px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .reponse-btn:hover:not(:disabled) { background: #e2eafc; border-color: #1a73e8; }
+        .reponse-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .reponse-btn.correcte { background: #d4edda; border-color: #28a745; color: #155724; }
+        .reponse-btn.mauvaise { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+
+        #feedback {
+            font-size: 0.95rem;
+            font-weight: bold;
+            min-height: 20px;
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        #feedback.ok { background: #d4edda; color: #155724; }
+        #feedback.ko { background: #f8d7da; color: #721c24; }
+        #feedback.timeout { background: #fff3cd; color: #856404; }
+
+        #infos-quiz {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.82rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        #streak-info { color: #e65100; font-weight: bold; }
+
+        #joueur-actuel {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            padding: 6px 12px;
+            background: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            border-radius: 4px;
+        }
+
+        .recommandations { margin-top: 12px; }
+        .recommandations h4 { margin-bottom: 6px; color: #c0392b; }
+        .recommandations ul { padding-left: 18px; }
+        .recommandations li { margin: 4px 0; font-size: 0.9rem; }
+
+        #top5 { padding-left: 18px; }
+        #top5 li { margin: 5px 0; font-size: 0.9rem; }
+
+        #podium p { font-size: 1.1rem; margin: 8px 0; }
+
+        input[type="text"] {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            font-size: 0.95rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>CyberShield</h1>
+        <p>Propulsé par SecureNova</p>
+        <nav class="top-nav">
+            <div class="dropdown">
+                <button class="dropbtn">Sélectionner un module ▼</button>
+                <div class="dropdown-content">
+                    <a href="../index.html">Accueil</a>
+                    <a href="module1.html">Module 1 — Robustesse de mot de passe</a>
+                    <a href="module2.html">Module 2 — Chiffrement de messages</a>
+                    <a href="module3.html">Module 3 — Détecteur de phishing</a>
+                    <a href="module4.html">Module 4 — Dashboard de veille</a>
+                    <a href="module5.html">Module 5 — Quiz interactif</a>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-  <div id="accueil">
-    <h1>Quiz Cybersécurité</h1>
-    <p>10 questions . 15 secondes par question.</p>
-    <button onclick="demarrerQuiz()">Démarrer</button>
-    <button onclick="afficherModeChoix()">Mode Duel</button>
-  </div>
+    <main>
+        <h2>Module 5 : Quiz interactif</h2>
+        <p>Testez vos connaissances en cybersécurité. 10 questions aléatoires, 15 secondes par question.</p>
 
-  <div id="modeChoix" style="display:none">
-    <h2>Mode Duel</h2>
-    <input type="text" id="nomJ1" placeholder="Nom Joueur 1" />
-    <input type="text" id="nomJ2" placeholder="Nom Joueur 2" />
-    <button onclick="demarrerDuel()">Lancer</button>
-    <button onclick="retourAccueil()">Retour</button>
-  </div>
+        <div class="module-test">
 
-  <div id="quiz" style="display:none">
-    <div id="infos">
-      <span id="numero">Question 1/10</span>
-      <span id="categorie"></span>
-      <span id="difficulte"></span>
-      <span id="score">Score : 0</span>
-      <span id="streak"></span>
-    </div>
-    <div id="joueurActuel" style="display:none"></div>
-    <div id="timer">15s</div>
-    <div id="question"></div>
-    <div id="reponses"></div>
-    <div id="feedback"></div>
-  </div>
+            <div id="accueil">
+                <h3>Choisissez un mode</h3>
+                <br>
+                <button class="quiz-btn" onclick="demarrerQuiz()">Solo</button>
+                <button class="quiz-btn secondaire" onclick="afficherModeChoix()">Mode Duel</button>
+            </div>
 
-  <div id="resultats" style="display:none">
-    <h2>Résultats</h2>
-    <p id="scoreFinal"></p>
-    <p id="messageResultat"></p>
-    <h3>Top 5</h3>
-    <ol id="top5"></ol>
-    <button onclick="demarrerQuiz()">Rejouer</button>
-    <button onclick="retourAccueil()">Accueil</button>
-  </div>
+            <div id="modeChoix" style="display:none">
+                <h3>Mode Duel</h3>
+                <br>
+                <input type="text" id="nomJ1" placeholder="Nom Joueur 1" />
+                <input type="text" id="nomJ2" placeholder="Nom Joueur 2" />
+                <button class="quiz-btn" onclick="demarrerDuel()">Lancer</button>
+                <button class="quiz-btn secondaire" onclick="retourAccueil()">Retour</button>
+            </div>
 
-  <div id="resultatsDuel" style="display:none">
-    <h2>Podium</h2>
-    <div id="podium"></div>
-    <button onclick="retourAccueil()">Accueil</button>
-  </div>
+            <div id="quiz" style="display:none">
+                <div id="infos-quiz">
+                    <span id="numero">Question 1/10</span>
+                    <span id="categorie"></span>
+                    <span id="difficulte"></span>
+                    <span id="score-affiche">Score : 0</span>
+                    <span id="streak-info"></span>
+                </div>
+                <div id="joueur-actuel" style="display:none"></div>
+                <div id="timer-texte">15s</div>
+                <div id="timer-bar-container">
+                    <div id="timer-bar"></div>
+                </div>
+                <div id="question-texte"></div>
+                <div id="reponses"></div>
+                <div id="feedback"></div>
+            </div>
 
-  <script src="../js/quiz.js"></script>
+            <div id="resultats" style="display:none">
+                <h3>Résultats</h3>
+                <p id="score-final" style="font-size:1.3rem; font-weight:bold; margin:8px 0;"></p>
+                <p id="message-resultat"></p>
+                <div class="recommandations" id="recommandations"></div>
+                <br>
+                <h3>Top 5</h3>
+                <ol id="top5"></ol>
+                <br>
+                <button class="quiz-btn" onclick="demarrerQuiz()">Rejouer</button>
+                <button class="quiz-btn secondaire" onclick="retourAccueil()">Accueil</button>
+            </div>
+
+            <div id="resultatsDuel" style="display:none">
+                <h3>Podium</h3>
+                <div id="podium"></div>
+                <br>
+                <button class="quiz-btn" onclick="retourAccueil()">Accueil</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SecureNova. Sensibilisation à la cybersécurité pour les PME.</p>
+    </footer>
+
+    <script src="../js/quiz.js"></script>
 </body>
 </html>

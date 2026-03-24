@@ -32,6 +32,7 @@ let questionActuelle = 0;
 let selection = [];
 let timerInterval = null;
 let tempsRestant = 15;
+let categoriesEchouees = [];
 
 let modeDuel = false;
 let joueurActif = 1;
@@ -43,16 +44,19 @@ let questionsJ1 = [];
 let questionsJ2 = [];
 let questionDuelActuelle = 0;
 
+function cacherTout() {
+  ["accueil", "modeChoix", "quiz", "resultats", "resultatsDuel"].forEach(id => {
+    document.getElementById(id).style.display = "none";
+  });
+}
+
 function retourAccueil() {
+  cacherTout();
   document.getElementById("accueil").style.display = "block";
-  document.getElementById("quiz").style.display = "none";
-  document.getElementById("resultats").style.display = "none";
-  document.getElementById("resultatsDuel").style.display = "none";
-  document.getElementById("modeChoix").style.display = "none";
 }
 
 function afficherModeChoix() {
-  document.getElementById("accueil").style.display = "none";
+  cacherTout();
   document.getElementById("modeChoix").style.display = "block";
 }
 
@@ -61,14 +65,13 @@ function demarrerQuiz() {
   score = 0;
   streak = 0;
   questionActuelle = 0;
-
+  categoriesEchouees = [];
   selection = [...questions].sort(() => Math.random() - 0.5).slice(0, 10);
 
-  document.getElementById("accueil").style.display = "none";
-  document.getElementById("resultats").style.display = "none";
+  cacherTout();
   document.getElementById("quiz").style.display = "block";
-  document.getElementById("joueurActuel").style.display = "none";
-
+  document.getElementById("joueur-actuel").style.display = "none";
+  
   afficherQuestion();
 }
 
@@ -78,93 +81,133 @@ function afficherQuestion() {
   document.getElementById("numero").textContent = "Question " + (questionActuelle + 1) + "/10";
   document.getElementById("categorie").textContent = q.categorie;
   document.getElementById("difficulte").textContent = q.difficulte;
-  document.getElementById("question").textContent = q.question;
-  document.getElementById("feedback").textContent = "";
-  document.getElementById("score").textContent = "Score : " + score;
-  document.getElementById("streak").textContent = streak >= 3 ? "Streak x" + streak : "";
+  document.getElementById("score-affiche").textContent = "Score : " + score;
+  document.getElementById("streak-info").textContent = streak >= 3 ? "Streak x" + streak + " (+50%)" : "";
+  document.getElementById("question-texte").textContent = q.question;
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = "";
+  fb.className = "";
 
   const reponsesDiv = document.getElementById("reponses");
   reponsesDiv.innerHTML = "";
-
+  
   q.reponses.forEach((rep, index) => {
     const btn = document.createElement("button");
+    btn.className = "reponse-btn";
     btn.textContent = rep;
-    btn.onclick = () => verifierReponse(index);
+    btn.onclick = () => verifierReponse(index, btn);
     reponsesDiv.appendChild(btn);
   });
 
   lancerTimer();
 }
 
-function verifierReponse(indexChoisi) {
+function verifierReponse(indexChoisi, btnClique) {
   clearInterval(timerInterval);
-  document.querySelectorAll("#reponses button").forEach(btn => btn.disabled = true);
+  const boutons = document.querySelectorAll(".reponse-btn");
+  boutons.forEach(btn => btn.disabled = true);
 
   const q = selection[questionActuelle];
+  const fb = document.getElementById("feedback");
 
   if (indexChoisi === q.bonneReponse) {
     streak++;
     let points = streak >= 3 ? 15 : 10;
     score += points;
-    document.getElementById("feedback").textContent = "Bonne réponse ! +" + points + " pts";
-    document.getElementById("feedback").style.color = "green";
+    btnClique.classList.add("correcte");
+    fb.textContent = "Bonne réponse ! +" + points + " pts. " + q.explication;
+    fb.className = "ok";
   } else {
     streak = 0;
-    document.getElementById("feedback").textContent = "Mauvaise réponse. " + q.explication;
-    document.getElementById("feedback").style.color = "red";
+    categoriesEchouees.push(q.categorie);
+    if(btnClique) btnClique.classList.add("mauvaise");
+    boutons[q.bonneReponse].classList.add("correcte"); // Montre la bonne réponse
+    fb.textContent = "Mauvaise réponse. " + q.explication;
+    fb.className = "ko";
   }
 
-  document.getElementById("score").textContent = "Score : " + score;
-  document.getElementById("streak").textContent = streak >= 3 ? "Streak x" + streak : "";
+  document.getElementById("score-affiche").textContent = "Score : " + score;
+  document.getElementById("streak-info").textContent = streak >= 3 ? "Streak x" + streak + " (+50%)" : "";
 
   setTimeout(() => {
     questionActuelle++;
-    if (questionActuelle < 10) afficherQuestion();
-    else afficherResultats();
-  }, 2000);
+    if (questionActuelle < 10) {
+      afficherQuestion();
+    } else {
+      afficherResultats();
+    }
+  }, 3500); // 3.5 secondes pour lire l'explication
 }
 
 function lancerTimer() {
   tempsRestant = 15;
-  document.getElementById("timer").textContent = tempsRestant + "s";
-  document.getElementById("timer").style.color = "black";
+  const timerTexte = document.getElementById("timer-texte");
+  const timerBar = document.getElementById("timer-bar");
+  
+  timerTexte.textContent = tempsRestant + "s";
+  timerTexte.style.color = "#333";
+  timerBar.style.width = "100%";
+  timerBar.style.background = "#1a73e8";
 
   timerInterval = setInterval(() => {
     tempsRestant--;
-    document.getElementById("timer").textContent = tempsRestant + "s";
+    timerTexte.textContent = tempsRestant + "s";
+    
+    const pourcentage = (tempsRestant / 15) * 100;
+    timerBar.style.width = pourcentage + "%";
 
-    if (tempsRestant <= 5) document.getElementById("timer").style.color = "red";
+    if (tempsRestant <= 5) {
+      timerTexte.style.color = "#dc3545";
+      timerBar.style.background = "#dc3545";
+    }
 
     if (tempsRestant <= 0) {
       clearInterval(timerInterval);
       streak = 0;
-      document.getElementById("feedback").textContent = "Temps écoulé.";
-      document.getElementById("feedback").style.color = "orange";
-      document.querySelectorAll("#reponses button").forEach(btn => btn.disabled = true);
+      const q = selection[questionActuelle];
+      categoriesEchouees.push(q.categorie);
+      
+      document.querySelectorAll(".reponse-btn").forEach(btn => btn.disabled = true);
+      document.querySelectorAll(".reponse-btn")[q.bonneReponse].classList.add("correcte");
+      
+      const fb = document.getElementById("feedback");
+      fb.textContent = "Temps écoulé ! " + q.explication;
+      fb.className = "timeout";
 
       setTimeout(() => {
         questionActuelle++;
         if (questionActuelle < 10) afficherQuestion();
         else afficherResultats();
-      }, 1500);
+      }, 3500);
     }
   }, 1000);
 }
 
 function afficherResultats() {
-  document.getElementById("quiz").style.display = "none";
+  cacherTout();
   document.getElementById("resultats").style.display = "block";
-  document.getElementById("scoreFinal").textContent = "Score final : " + score + "/150";
+  document.getElementById("score-final").textContent = "Score final : " + score + "/150";
 
-  let msg = "";
-  if (score >= 120) msg = "Excellent.";
-  else if (score >= 80) msg = "Pas mal.";
-  else msg = "A revoir.";
-  document.getElementById("messageResultat").textContent = msg;
+  let msg = score >= 120 ? "Excellent niveau de sensibilisation." : score >= 80 ? "Bon niveau, mais quelques lacunes." : "Une révision s'impose.";
+  document.getElementById("message-resultat").textContent = msg;
 
+  // Recommandations
+  const divRec = document.getElementById("recommandations");
+  divRec.innerHTML = "";
+  if (categoriesEchouees.length > 0) {
+    const categoriesUniques = [...new Set(categoriesEchouees)];
+    let htmlRec = "<h4>Recommandations ciblées :</h4><ul>";
+    categoriesUniques.forEach(cat => {
+      htmlRec += "<li>Révisez le module concernant : <strong>" + cat + "</strong></li>";
+    });
+    htmlRec += "</ul>";
+    divRec.innerHTML = htmlRec;
+  }
+
+  // LocalStorage
   const sessions = JSON.parse(localStorage.getItem("cyberShieldScores") || "[]");
-  sessions.push({ score, date: new Date().toLocaleDateString() });
-
+  sessions.push({ score: score, date: new Date().toLocaleDateString() });
   const top5 = sessions.sort((a, b) => b.score - a.score).slice(0, 5);
   localStorage.setItem("cyberShieldScores", JSON.stringify(top5));
 
@@ -172,14 +215,14 @@ function afficherResultats() {
   listeTop.innerHTML = "";
   top5.forEach((s, i) => {
     const li = document.createElement("li");
-    li.textContent = "#" + (i + 1) + " - " + s.score + " pts (" + s.date + ")";
+    li.textContent = "Rang " + (i + 1) + " : " + s.score + " pts (" + s.date + ")";
     listeTop.appendChild(li);
   });
 }
 
 function demarrerDuel() {
-  nomJ1 = document.getElementById("nomJ1").value || "Joueur 1";
-  nomJ2 = document.getElementById("nomJ2").value || "Joueur 2";
+  nomJ1 = document.getElementById("nomJ1").value.trim() || "Joueur 1";
+  nomJ2 = document.getElementById("nomJ2").value.trim() || "Joueur 2";
 
   modeDuel = true;
   scoreJ1 = 0;
@@ -190,9 +233,9 @@ function demarrerDuel() {
   questionsJ1 = [...questions].sort(() => Math.random() - 0.5).slice(0, 10);
   questionsJ2 = [...questions].sort(() => Math.random() - 0.5).slice(0, 10);
 
-  document.getElementById("modeChoix").style.display = "none";
+  cacherTout();
   document.getElementById("quiz").style.display = "block";
-  document.getElementById("joueurActuel").style.display = "block";
+  document.getElementById("joueur-actuel").style.display = "block";
 
   afficherQuestionDuel();
 }
@@ -202,48 +245,57 @@ function afficherQuestionDuel() {
   const scoreActif = joueurActif === 1 ? scoreJ1 : scoreJ2;
   const nomActif = joueurActif === 1 ? nomJ1 : nomJ2;
 
-  document.getElementById("joueurActuel").textContent = nomActif;
-  document.getElementById("numer").textContent = "Question " + (questionDuelActuelle + 1) + "/10";
-  document.getElementById("categori").textContent = q.categorie;
+  document.getElementById("joueur-actuel").textContent = "Tour de : " + nomActif;
+  document.getElementById("numero").textContent = "Question " + (questionDuelActuelle + 1) + "/10";
+  document.getElementById("categorie").textContent = q.categorie;
   document.getElementById("difficulte").textContent = q.difficulte;
-  document.getElementById("question").textContent = q.question;
-  document.getElementById("feedback").textContent = "";
-  document.getElementById("score").textContent = "Score : " + scoreActif;
-  document.getElementById("streak").textContent = "";
+  document.getElementById("score-affiche").textContent = "Score : " + scoreActif;
+  document.getElementById("streak-info").textContent = ""; // Pas de streak en duel
+  document.getElementById("question-texte").textContent = q.question;
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = "";
+  fb.className = "";
 
   const reponsesDiv = document.getElementById("reponses");
   reponsesDiv.innerHTML = "";
-
+  
   q.reponses.forEach((rep, index) => {
     const btn = document.createElement("button");
+    btn.className = "reponse-btn";
     btn.textContent = rep;
-    btn.onclick = () => verifierReponseDuel(index);
+    btn.onclick = () => verifierReponseDuel(index, btn);
     reponsesDiv.appendChild(btn);
   });
 
-  lancerTimer();
+  lancerTimerDuel();
 }
 
-function verifierReponseDuel(indexChoisi) {
+function verifierReponseDuel(indexChoisi, btnClique) {
   clearInterval(timerInterval);
-  document.querySelectorAll("#reponses button").forEach(btn => btn.disabled = true);
+  const boutons = document.querySelectorAll(".reponse-btn");
+  boutons.forEach(btn => btn.disabled = true);
 
   const q = joueurActif === 1 ? questionsJ1[questionDuelActuelle] : questionsJ2[questionDuelActuelle];
-
+  const fb = document.getElementById("feedback");
   let points = 0;
+
   if (indexChoisi === q.bonneReponse) {
     points = 10;
-    document.getElementById("feedback").textContent = "Bonne réponse ! +10 pts";
-    document.getElementById("feedback").style.color = "green";
+    btnClique.classList.add("correcte");
+    fb.textContent = "Bonne réponse ! +10 pts. " + q.explication;
+    fb.className = "ok";
   } else {
-    document.getElementById("feedback").textContent = "Mauvaise réponse. " + q.explication;
-    document.getElementById("feedback").style.color = "red";
+    btnClique.classList.add("mauvaise");
+    boutons[q.bonneReponse].classList.add("correcte");
+    fb.textContent = "Mauvaise réponse. " + q.explication;
+    fb.className = "ko";
   }
 
   if (joueurActif === 1) scoreJ1 += points;
   else scoreJ2 += points;
 
-  document.getElementById("score").textContent = "Score : " + (joueurActif === 1 ? scoreJ1 : scoreJ2);
+  document.getElementById("score-affiche").textContent = "Score : " + (joueurActif === 1 ? scoreJ1 : scoreJ2);
 
   setTimeout(() => {
     if (joueurActif === 1) {
@@ -255,20 +307,68 @@ function verifierReponseDuel(indexChoisi) {
       if (questionDuelActuelle < 10) afficherQuestionDuel();
       else afficherResultatsDuel();
     }
-  }, 2000);
+  }, 3500);
+}
+
+function lancerTimerDuel() {
+  tempsRestant = 15;
+  const timerTexte = document.getElementById("timer-texte");
+  const timerBar = document.getElementById("timer-bar");
+  
+  timerTexte.textContent = tempsRestant + "s";
+  timerTexte.style.color = "#333";
+  timerBar.style.width = "100%";
+  timerBar.style.background = "#1a73e8";
+
+  timerInterval = setInterval(() => {
+    tempsRestant--;
+    timerTexte.textContent = tempsRestant + "s";
+    
+    const pourcentage = (tempsRestant / 15) * 100;
+    timerBar.style.width = pourcentage + "%";
+
+    if (tempsRestant <= 5) {
+      timerTexte.style.color = "#dc3545";
+      timerBar.style.background = "#dc3545";
+    }
+
+    if (tempsRestant <= 0) {
+      clearInterval(timerInterval);
+      const q = joueurActif === 1 ? questionsJ1[questionDuelActuelle] : questionsJ2[questionDuelActuelle];
+      
+      document.querySelectorAll(".reponse-btn").forEach(btn => btn.disabled = true);
+      document.querySelectorAll(".reponse-btn")[q.bonneReponse].classList.add("correcte");
+      
+      const fb = document.getElementById("feedback");
+      fb.textContent = "Temps écoulé ! " + q.explication;
+      fb.className = "timeout";
+
+      setTimeout(() => {
+        if (joueurActif === 1) {
+          joueurActif = 2;
+          afficherQuestionDuel();
+        } else {
+          questionDuelActuelle++;
+          joueurActif = 1;
+          if (questionDuelActuelle < 10) afficherQuestionDuel();
+          else afficherResultatsDuel();
+        }
+      }, 3500);
+    }
+  }, 1000);
 }
 
 function afficherResultatsDuel() {
-  document.getElementById("quiz").style.display = "none";
+  cacherTout();
   document.getElementById("resultatsDuel").style.display = "block";
 
   let html = "";
   if (scoreJ1 > scoreJ2) {
-    html = "<p>1er : " + nomJ1 + " - " + scoreJ1 + " pts</p><p>2eme : " + nomJ2 + " - " + scoreJ2 + " pts</p>";
+    html = "<p>Gagnant : <strong>" + nomJ1 + "</strong> (" + scoreJ1 + " pts)</p><p>Perdant : " + nomJ2 + " (" + scoreJ2 + " pts)</p>";
   } else if (scoreJ2 > scoreJ1) {
-    html = "<p>1er : " + nomJ2 + " - " + scoreJ2 + " pts</p><p>2eme : " + nomJ1 + " - " + scoreJ1 + " pts</p>";
+    html = "<p>Gagnant : <strong>" + nomJ2 + "</strong> (" + scoreJ2 + " pts)</p><p>Perdant : " + nomJ1 + " (" + scoreJ1 + " pts)</p>";
   } else {
-    html = "<p>Egalite : " + scoreJ1 + " pts chacun</p>";
+    html = "<p>Egalité parfaite : " + scoreJ1 + " pts chacun.</p>";
   }
 
   document.getElementById("podium").innerHTML = html;
