@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2 : Chiffrement | CyberShield</title>
+    <link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+    <header>
+        <h1>CyberShield</h1>
+        <p>Propulsé par SecureNova</p>
+        
+        <nav class="top-nav">
+            <div class="dropdown">
+                <button class="dropbtn">Sélectionner un module ▼</button>
+                <div class="dropdown-content">
+                    <a href="../index.html">Accueil</a>
+                    <a href="module1.html">Module 1 — Robustesse de mot de passe</a>
+                    <a href="module2.html">Module 2 — Chiffrement de messages</a>
+                    <a href="module3.html">Module 3 — Détecteur de phishing</a>
+                    <a href="module4.html">Module 4 — Dashboard de veille</a>
+                    <a href="module5.html">Module 5 — Quiz interactif</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Module 3 : Détecteur de Phising</h2>
+        <p>Se protéger des mails frauduleux à l'aide de notre outil d'analyse.</p>
+        
+    <div class="module-test">
+            <h3>Détecteur de phishing</h3>
+
+            <label for="message-input">Mail à analyser :</label>
+            <textarea id="message-input" placeholder="Saisissez le mail ici..."></textarea>
+            <button class="analyze-btn" id="analyzeBtn">Scan</button>
+
+        <score>
+            <p id="score">Suspicion de phising : (0/10)</p>
+        </score>      
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SecureNova. Sensibilisation à la cybersécurité pour les PME.</p>
+    </footer>
+
+    <script src="../js/phising.js"></script>
+</body>
+</html>

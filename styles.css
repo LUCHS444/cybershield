@@ -52,6 +52,7 @@ h2 {
 
 .btn {
     display: inline-block;
+    border: none;
     background-color: #3498db;
     color: white;
     padding: 12px 24px;
@@ -64,6 +65,18 @@ h2 {
 
 .btn:hover {
     background-color: #2980b9;
+}
+
+.analyze-btn {
+    color: white;
+    background-color: #1a252f;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+    border: none;
 }
 
 footer {
@@ -182,4 +195,15 @@ textarea {
 
 #bruteforce-results {
     margin-top: 2rem;
+}
+
+score {
+    color: #297fb9;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px; ;
+}
+
+.presentation {
+    text-align: center;
 }
