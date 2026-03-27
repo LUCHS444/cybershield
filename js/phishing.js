@@ -8,8 +8,12 @@ const phishingRules = {
 const analyzeBtn = document.getElementById('analyzeBtn');
 const messageInput = document.getElementById('message-input');
 const scoreDisplay = document.getElementById('score');
+const reasons = document.getElementById("reasons-phishing");
+
+
 
 function analyzeEmail(text) {
+    
     let score = 0;
     const words = text.toLowerCase().split(/\s+/); 
 
@@ -67,4 +71,7 @@ analyzeBtn.addEventListener('click', () => {
         scoreDisplay.style.color = "green";
         scoreDisplay.textContent = `Risque faible (${finalScore/10}/10)`;
     }
+
+    reasons.innerHTML = reasonsList.map(f => `<li>${f}</li>`).join("");
+
 });
